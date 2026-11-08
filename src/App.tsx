@@ -8,6 +8,7 @@ const Login = lazy(() => import('./pages/admin/Login'))
 const Projects = lazy(() => import('./pages/admin/Projects'))
 const Leads = lazy(() => import('./pages/admin/Leads'))
 const Categories = lazy(() => import('./pages/admin/Categories'))
+const Pricing = lazy(() => import('./pages/admin/Pricing'))
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
             <Route index element={<Projects />} />
             <Route path="leads" element={<Leads />} />
             <Route path="categories" element={<Categories />} />
+            <Route path="pricing" element={<Pricing />} />
           </Route>
           {/* Old Framer pages → sections of the new single page */}
           <Route path="/projects" element={<Navigate to="/#work" replace />} />

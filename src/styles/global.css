@@ -1014,6 +1014,14 @@ button {
   gap: 16px;
 }
 
+.plans {
+  display: grid;
+  grid-template-columns: repeat(var(--plan-count, 3), minmax(0, 1fr));
+  gap: 16px;
+  max-width: calc(var(--plan-count, 3) * 400px);
+  margin: 0 auto;
+}
+
 .plan {
   display: flex;
   flex-direction: column;
@@ -1356,7 +1364,7 @@ textarea.input {
 
 .seg {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
   gap: 8px;
   margin-top: 8px;
 }
@@ -1505,6 +1513,7 @@ textarea.input {
   .hero__grid,
   .services__grid,
   .grid-3,
+  .plans,
   .contact__grid {
     grid-template-columns: minmax(0, 1fr);
     gap: 24px;

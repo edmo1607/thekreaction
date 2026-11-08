@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Icon } from '../Icon'
-import { CONTACT, FAQS, PACKAGES, PARTNERS, TESTIMONIALS, whatsappLink } from '../../content/site'
+import { CONTACT, FAQS, PARTNERS, TESTIMONIALS, whatsappLink } from '../../content/site'
 import { useQuote } from './QuoteContext'
 
 export function Partners() {
@@ -15,7 +15,7 @@ export function Partners() {
 }
 
 export function Pricing() {
-  const { pkg, setPkg, startQuote } = useQuote()
+  const { packages, pkg, setPkg, startQuote } = useQuote()
   return (
     <section className="pricing" id="pricing">
       <div className="wrap pricing__inner">
@@ -24,45 +24,54 @@ export function Pricing() {
           <h2 className="h2">Pick a package</h2>
           <p>Filming and editing included. Need more time? Add extra hours to any package.</p>
         </div>
-        <div className="grid-3">
-          {PACKAGES.map((p) => (
-            <div
-              key={p.id}
-              className={`plan${p.popular ? ' plan--dark' : ''}${pkg === p.id ? ' plan--selected' : ''}`}
-            >
-              <div className="plan__top">
-                <h3 style={{ margin: 0, font: 'inherit' }}>{p.name}</h3>
-                {p.popular && <span className="plan__badge">Most booked</span>}
-              </div>
-              <div className="plan__price">{p.price}</div>
-              <p className="plan__ideal">{p.ideal}</p>
-              <ul className="plan__list">
-                <li>
-                  <Icon name="clock" />
-                  {p.hours} of filming
-                </li>
-                <li>
-                  <Icon name="reel" />
-                  {p.reels} edited reels (15–30 sec)
-                </li>
-                <li>
-                  <Icon name="check" />
-                  Extra hours available
-                </li>
-              </ul>
-              <button
-                type="button"
-                className={`btn btn--lg btn--block ${p.popular ? 'btn--primary' : 'btn--dark'}`}
-                onClick={() => {
-                  setPkg(p.id)
-                  startQuote({ pkg: p.id })
-                }}
+        {packages.length > 0 && (
+          <div className="plans" style={{ ['--plan-count' as string]: Math.min(packages.length, 4) }}>
+            {packages.map((p) => (
+              <div
+                key={p.id}
+                className={`plan${p.popular ? ' plan--dark' : ''}${pkg === p.slug ? ' plan--selected' : ''}`}
               >
-                Book {p.name}
-              </button>
-            </div>
-          ))}
-        </div>
+                <div className="plan__top">
+                  <h3 style={{ margin: 0, font: 'inherit' }}>{p.name}</h3>
+                  {p.popular && <span className="plan__badge">Most booked</span>}
+                </div>
+                <div className="plan__price">{p.price}</div>
+                {p.ideal && <p className="plan__ideal">{p.ideal}</p>}
+                <ul className="plan__list">
+                  {p.hours && (
+                    <li>
+                      <Icon name="clock" />
+                      {p.hours} of filming
+                    </li>
+                  )}
+                  {p.reels != null && (
+                    <li>
+                      <Icon name="reel" />
+                      {p.reels} edited reel{p.reels === 1 ? '' : 's'}
+                      {p.reel_length ? ` (${p.reel_length})` : ''}
+                    </li>
+                  )}
+                  {p.features.map((f) => (
+                    <li key={f}>
+                      <Icon name="check" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  type="button"
+                  className={`btn btn--lg btn--block ${p.popular ? 'btn--primary' : 'btn--dark'}`}
+                  onClick={() => {
+                    setPkg(p.slug)
+                    startQuote({ pkg: p.slug })
+                  }}
+                >
+                  Book {p.name}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
         <p className="pricing__note">
           Podcast, interior design, music video or live stream?{' '}
           <a

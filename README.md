@@ -3,7 +3,7 @@
 Lead-focused website for **The K Reaction** (Miami video studio) and an admin dashboard to manage projects, categories and leads.
 
 - **Website** (`/`) — one page built to turn visitors into quote requests: quick-quote picker in the hero, Services menu + "What we film" section (Nightlife, Festivals, Live sets, Podcasts, Interior design, Brands), filterable work grid with video previews, pricing, FAQ and a short quote form that saves leads (or falls back to WhatsApp).
-- **Dashboard** (`/admin`) — upload a cover image and a video (or paste a YouTube/Instagram/Vimeo link), write the description, add the song used, pick categories, feature on the homepage, publish. Leads inbox with status tracking. Category manager.
+- **Dashboard** (`/admin`) — **Pricing**: create, edit, reorder and hide the packages shown on the site. **Projects**: upload a cover image and a video (or paste a YouTube/Instagram/Vimeo link), write the description, add the song used, pick categories, feature on the homepage, publish. Leads inbox with status tracking. Category manager.
 
 Stack: React + TypeScript + Vite, React Router, Supabase (Postgres, Auth, Storage). Deploys as static files to HostGator via GitHub Actions.
 
@@ -39,6 +39,8 @@ Without Supabase keys the site still works: it shows built-in sample projects, a
 5. **Project Settings → API**: copy the **Project URL** and the **anon public** key into `.env.local` (and into GitHub secrets, below).
 6. Recommended: **Authentication → Sign In / Providers → Email** → turn off "Allow new users to sign up", so only accounts you create can log in.
 
+**Upgrading an existing project:** run any new files in [`supabase/migrations/`](supabase/migrations) in the SQL Editor (e.g. `002_packages.sql` adds dashboard-managed pricing). `schema.sql` already includes them for fresh setups.
+
 Security model: visitors can read published projects and categories and can only *insert* leads. Everything else (drafts, uploads, leads inbox) requires a signed-in user listed in `admins`. The anon key is safe to ship in the browser.
 
 ## Deploy to HostGator
@@ -73,8 +75,8 @@ In GitHub → **Settings → Secrets and variables → Actions**:
 
 | What | Where |
 | --- | --- |
-| Projects, videos, categories | Dashboard → `/admin` |
-| Services, packages & prices, FAQ, testimonials, partners, contact info | `src/content/site.ts` |
+| Projects, videos, categories, **packages & prices** | Dashboard → `/admin` |
+| Services, FAQ, testimonials, partners, contact info | `src/content/site.ts` |
 | Colors, fonts, spacing | CSS variables at the top of `src/styles/global.css` |
 
 ## Project structure

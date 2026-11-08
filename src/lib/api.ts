@@ -1,6 +1,6 @@
 import { supabase, MEDIA_BUCKET } from './supabase'
-import type { Category, Lead, LeadStatus, Project, ProjectStatus } from './types'
-import { DEFAULT_CATEGORIES, FALLBACK_PROJECTS } from '../content/site'
+import type { Category, Lead, LeadStatus, Package, Project, ProjectStatus } from './types'
+import { DEFAULT_CATEGORIES, FALLBACK_PACKAGES, FALLBACK_PROJECTS } from '../content/site'
 
 const PROJECT_SELECT =
   'id,title,client,description,song,event_date,cover_path,video_path,video_url,featured,status,sort,created_at,project_categories(categories(id,name,slug,sort))'
@@ -227,4 +227,87 @@ export async function updateLeadStatus(id: string, status: LeadStatus): Promise<
   const db = requireClient()
   const { error } = await db.from('leads').update({ status }).eq('id', id)
   if (error) throw error
+}
+
+// ---------- Packages (pricing) ----------
+
+const PACKAGE_SELECT = 'id,slug,name,price,hours,reels,reel_length,ideal,features,popular,visible,sort'
+
+function fallbackPackages(): Package[] {
+  return FALLBACK_PACKAGES.filter((p) => p.visible)
+}
+
+/** Visible packages for the website. Falls back to built-in prices so pricing never disappears. */
+export async function fetchPackages(): Promise<Package[]> {
+  if (!supabase) return fallbackPackages()
+  const { data, error } = await supabase
+    .from('packages')
+    .select(PACKAGE_SELECT)
+    .eq('visible', true)
+    .order('sort', { ascending: true })
+  if (error) {
+    console.warn('Packages not available yet, using built-in prices:', error.message)
+    return fallbackPackages()
+  }
+  return data as Package[]
+}
+
+export async function fetchAllPackages(): Promise<Package[]> {
+  const db = requireClient()
+  const { data, error } = await db.from('packages').select(PACKAGE_SELECT).order('sort', { ascending: true })
+  if (error) throw error
+  return data as Package[]
+}
+
+export type PackageInput = Omit<Package, 'id' | 'slug' | 'sort'>
+
+function cleanPackage(input: PackageInput) {
+  return {
+    name: input.name.trim(),
+    price: input.price.trim(),
+    hours: input.hours?.trim() || null,
+    reels: input.reels ?? null,
+    reel_length: input.reel_length?.trim() || null,
+    ideal: input.ideal?.trim() || null,
+    features: input.features.map((f) => f.trim()).filter(Boolean),
+    popular: input.popular,
+    visible: input.visible,
+  }
+}
+
+export async function createPackage(input: PackageInput, existing: Package[]): Promise<Package> {
+  const db = requireClient()
+  const base = slugify(input.name) || 'package'
+  const taken = new Set(existing.map((p) => p.slug))
+  let slug = base
+  for (let i = 2; taken.has(slug); i++) slug = `${base}-${i}`
+  const sort = Math.max(0, ...existing.map((p) => p.sort)) + 1
+  const { data, error } = await db
+    .from('packages')
+    .insert({ ...cleanPackage(input), slug, sort })
+    .select(PACKAGE_SELECT)
+    .single()
+  if (error) throw error
+  return data as Package
+}
+
+export async function updatePackage(id: string, input: PackageInput): Promise<void> {
+  const db = requireClient()
+  const { error } = await db.from('packages').update(cleanPackage(input)).eq('id', id)
+  if (error) throw error
+}
+
+export async function deletePackage(id: string): Promise<void> {
+  const db = requireClient()
+  const { error } = await db.from('packages').delete().eq('id', id)
+  if (error) throw error
+}
+
+/** Swap the display order of two packages. */
+export async function swapPackageOrder(a: Package, b: Package): Promise<void> {
+  const db = requireClient()
+  const first = await db.from('packages').update({ sort: b.sort }).eq('id', a.id)
+  if (first.error) throw first.error
+  const second = await db.from('packages').update({ sort: a.sort }).eq('id', b.id)
+  if (second.error) throw second.error
 }

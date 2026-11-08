@@ -39,4 +39,20 @@ export interface Lead {
   created_at: string
 }
 
-export type PackageId = 'basic' | 'standard' | 'premium' | 'custom'
+/** A package slug (e.g. "standard"), or "custom" for a tailored quote */
+export type PackageId = string
+
+export interface Package {
+  id: string
+  slug: string
+  name: string
+  price: string
+  hours: string | null
+  reels: number | null
+  reel_length: string | null
+  ideal: string | null
+  features: string[]
+  popular: boolean
+  visible: boolean
+  sort: number
+}

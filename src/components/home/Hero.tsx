@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { Icon } from '../Icon'
-import { PACKAGES, PLANS } from '../../content/site'
-import { useQuote } from './QuoteContext'
+import { PLANS } from '../../content/site'
+import { packageSummary, useQuote } from './QuoteContext'
 
 export function Hero() {
-  const { startQuote } = useQuote()
+  const { startQuote, findPackage, packages } = useQuote()
   const [planId, setPlanId] = useState(PLANS[0].id)
   const plan = PLANS.find((p) => p.id === planId) ?? PLANS[0]
-  const pkg = PACKAGES.find((p) => p.id === plan.pkg)
+  const pkg = findPackage(plan.pkg)
+  const fromPrice = cheapestPrice(packages)
 
   return (
     <section className="hero" id="top">
@@ -22,7 +23,7 @@ export function Hero() {
           </h1>
           <p className="hero__lead">
             Nightlife, festivals, live sets, podcasts, interior design and brands across Miami. Filmed, edited and
-            delivered as ready-to-post reels — from $300.
+            delivered as ready-to-post reels{fromPrice ? ` — from ${fromPrice}` : ''}.
           </p>
           <div className="hero__proof">
             {['50+ projects delivered', 'Reels in 15–30 sec formats', 'Reply on WhatsApp'].map((t) => (
@@ -60,14 +61,14 @@ export function Hero() {
             <div className="qq__pkg">{pkg ? `${pkg.name} package` : 'Custom quote'}</div>
             <div className="qq__summary">
               {pkg
-                ? `${pkg.hours} of filming · ${pkg.reels} edited reels`
+                ? packageSummary(pkg) || pkg.ideal
                 : 'Priced for your project — we reply with a fixed quote.'}
             </div>
           </div>
           <button
             type="button"
             className="btn btn--primary btn--lg btn--block"
-            onClick={() => startQuote({ pkg: plan.pkg, eventType: plan.eventType })}
+            onClick={() => startQuote({ pkg: pkg ? plan.pkg : 'custom', eventType: plan.eventType })}
           >
             Check my date <Icon name="arrow" />
           </button>
@@ -75,4 +76,17 @@ export function Hero() {
       </div>
     </section>
   )
+}
+
+/** Lowest "$123" price among the packages, for the hero line. Returns null if none parse. */
+function cheapestPrice(packages: { price: string }[]): string | null {
+  let best: { n: number; label: string } | null = null
+  for (const p of packages) {
+    const m = p.price.replace(/,/g, '').match(/\$\s?(\d+(?:\.\d+)?)/)
+    if (m) {
+      const n = Number(m[1])
+      if (!best || n < best.n) best = { n, label: `$${m[1]}` }
+    }
+  }
+  return best?.label ?? null
 }

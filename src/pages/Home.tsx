@@ -8,21 +8,22 @@ import { QuoteForm } from '../components/home/QuoteForm'
 import { Faq, Footer, MobileBar, Partners, Pricing, Process, Testimonials } from '../components/home/Sections'
 import { QuoteProvider } from '../components/home/QuoteContext'
 import { useAsync } from '../hooks/useAsync'
-import { fetchCategories, fetchPublishedProjects } from '../lib/api'
+import { fetchCategories, fetchPackages, fetchPublishedProjects } from '../lib/api'
 
 export default function Home() {
   const projects = useAsync(fetchPublishedProjects)
   const categories = useAsync(fetchCategories)
+  const packages = useAsync(fetchPackages)
 
   // Honor /#section links (also used by redirects from the old Framer pages)
-  const ready = !projects.loading
+  const ready = !projects.loading && !packages.loading
   useEffect(() => {
     const id = window.location.hash.slice(1)
     if (ready && id) document.getElementById(id)?.scrollIntoView({ block: 'start' })
   }, [ready])
 
   return (
-    <QuoteProvider>
+    <QuoteProvider packages={packages.data ?? []}>
       <Header />
       <main>
         <Hero />

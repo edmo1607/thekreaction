@@ -56,6 +56,7 @@ export default function AdminLayout() {
             Projects
           </NavLink>
           <NavLink to="/admin/leads">Leads</NavLink>
+          <NavLink to="/admin/pricing">Pricing</NavLink>
           <NavLink to="/admin/categories">Categories</NavLink>
         </nav>
         <div className="admin__side-foot">

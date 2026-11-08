@@ -1,4 +1,4 @@
-import type { PackageId } from '../lib/types'
+import type { Package, PackageId } from '../lib/types'
 
 export const CONTACT = {
   email: 'contact@thekreaction.com',
@@ -14,47 +14,54 @@ export function whatsappLink(message?: string): string {
   return message ? `${base}?text=${encodeURIComponent(message)}` : base
 }
 
-export interface Package {
-  id: Exclude<PackageId, 'custom'>
-  name: string
-  price: string
-  hours: string
-  reels: number
-  ideal: string
-  popular?: boolean
-}
-
-export const PACKAGES: Package[] = [
+/**
+ * Fallback packages — shown only when Supabase isn't configured or the
+ * `packages` table doesn't exist yet. Real prices are edited in Dashboard → Pricing.
+ */
+export const FALLBACK_PACKAGES: Package[] = [
   {
     id: 'basic',
+    slug: 'basic',
     name: 'Basic',
     price: '$300',
     hours: '1 hour',
     reels: 2,
+    reel_length: '15–30 sec',
     ideal: 'Perfect for quick projects, social highlights and product showcases.',
+    features: ['Extra hours available'],
+    popular: false,
+    visible: true,
+    sort: 1,
   },
   {
     id: 'standard',
+    slug: 'standard',
     name: 'Standard',
     price: '$350',
     hours: '2 hours',
     reels: 3,
+    reel_length: '15–30 sec',
     ideal: 'Ideal for business promos and event highlights.',
+    features: ['Extra hours available'],
     popular: true,
+    visible: true,
+    sort: 2,
   },
   {
     id: 'premium',
+    slug: 'premium',
     name: 'Premium',
     price: '$500',
     hours: '4 hours',
     reels: 4,
+    reel_length: '15–30 sec',
     ideal: 'Full coverage for major events and bigger stories.',
+    features: ['Extra hours available'],
+    popular: false,
+    visible: true,
+    sort: 3,
   },
 ]
-
-export function packageName(id: PackageId): string {
-  return PACKAGES.find((p) => p.id === id)?.name ?? 'Custom'
-}
 
 export interface Service {
   id: string
@@ -62,7 +69,6 @@ export interface Service {
   short: string
   desc: string
   items: string[]
-  from: string
   pkg: PackageId
   /** Category slug used to filter the work grid ('' = all) */
   filter: string
@@ -78,7 +84,6 @@ export const SERVICES: Service[] = [
     short: 'Parties, drag shows and club nights.',
     desc: 'Recaps of parties, drag shows and club nights that make people want to be at the next one.',
     items: ['Recap reels for Instagram and TikTok', 'Performers, crowd and venue moments', 'Drone on request'],
-    from: 'Standard · $350',
     pkg: 'standard',
     filter: 'nightlife',
     cta: 'Quote my event',
@@ -90,7 +95,6 @@ export const SERVICES: Service[] = [
     short: 'Full coverage for big stages.',
     desc: 'Full-day coverage for festivals and large events — stages, crowds and the story of the day.',
     items: ['Multi-hour coverage', 'Four edited reels', 'Aerial drone shots'],
-    from: 'Premium · $500',
     pkg: 'premium',
     filter: 'festival',
     cta: 'Quote my festival',
@@ -102,7 +106,6 @@ export const SERVICES: Service[] = [
     short: 'DJs and artists, cut into clips.',
     desc: 'Multi-angle coverage of your set, cut into clips that grow your following.',
     items: ['Booth and crowd angles', 'Clean audio from the board', 'Clips ready for every platform'],
-    from: 'Standard · $350',
     pkg: 'standard',
     filter: 'live-set',
     cta: 'Quote my set',
@@ -114,7 +117,6 @@ export const SERVICES: Service[] = [
     short: 'Video podcasts, recorded and edited.',
     desc: 'Video podcast production: multi-camera recording, clean sound and short clips from every episode.',
     items: ['Multi-camera recording', 'Sound design and mixing', 'Shorts cut from each episode'],
-    from: 'Custom quote',
     pkg: 'custom',
     filter: 'podcast',
     cta: 'Quote my podcast',
@@ -126,7 +128,6 @@ export const SERVICES: Service[] = [
     short: 'Spaces shown the way designers see them.',
     desc: 'Cinematic walkthroughs that show light, texture and detail — for designers, architects and real estate.',
     items: ['Cinematic walkthroughs', 'Detail and texture shots', 'Drone exteriors'],
-    from: 'Custom quote',
     pkg: 'custom',
     filter: 'interior-design',
     cta: 'Quote my space',
@@ -138,7 +139,6 @@ export const SERVICES: Service[] = [
     short: 'Product and business videos.',
     desc: 'Promos and product videos for businesses that need content that sells.',
     items: ['Concept and script help', 'Product and team shots', 'Ads-ready edits'],
-    from: 'Basic · $300',
     pkg: 'basic',
     filter: 'promo',
     cta: 'Quote my promo',

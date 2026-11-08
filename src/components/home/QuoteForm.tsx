@@ -1,18 +1,16 @@
 import { useState, type FormEvent } from 'react'
 import { Icon } from '../Icon'
-import { CONTACT, EVENT_TYPES, PACKAGES, packageName, whatsappLink } from '../../content/site'
+import { CONTACT, EVENT_TYPES, whatsappLink } from '../../content/site'
 import { submitLead } from '../../lib/api'
 import { supabase } from '../../lib/supabase'
-import type { PackageId } from '../../lib/types'
 import { useQuote } from './QuoteContext'
 
-const PKG_OPTIONS: { id: PackageId; label: string }[] = [
-  ...PACKAGES.map((p) => ({ id: p.id, label: `${p.name} ${p.price}` })),
-  { id: 'custom', label: 'Custom' },
-]
-
 export function QuoteForm() {
-  const { pkg, setPkg, eventType, setEventType } = useQuote()
+  const { packages, packageName, pkg, setPkg, eventType, setEventType } = useQuote()
+  const pkgOptions = [
+    ...packages.map((p) => ({ id: p.slug, label: `${p.name} ${p.price}` })),
+    { id: 'custom', label: 'Custom' },
+  ]
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
@@ -110,7 +108,7 @@ export function QuoteForm() {
                     Package
                   </span>
                   <div className="seg" role="group" aria-labelledby="pkg-label">
-                    {PKG_OPTIONS.map((o) => (
+                    {pkgOptions.map((o) => (
                       <button key={o.id} type="button" aria-pressed={pkg === o.id} onClick={() => setPkg(o.id)}>
                         {o.label}
                       </button>

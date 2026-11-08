@@ -5,8 +5,9 @@ import type { Project } from '../../lib/types'
 import { useQuote } from './QuoteContext'
 
 export function Services({ projects }: { projects: Project[] }) {
-  const { serviceId, setServiceId, setFilter, scrollTo, startQuote } = useQuote()
+  const { serviceId, setServiceId, setFilter, scrollTo, startQuote, findPackage } = useQuote()
   const svc = SERVICES.find((s) => s.id === serviceId) ?? SERVICES[0]
+  const svcPkg = svc.pkg === 'custom' ? undefined : findPackage(svc.pkg)
   const sample = projects.find((p) => p.cover_path && p.categories.some((c) => c.slug === svc.filter))
   const cover = mediaUrl(sample?.cover_path)
 
@@ -53,7 +54,7 @@ export function Services({ projects }: { projects: Project[] }) {
             </ul>
             <div className="services__foot">
               <span>
-                Starts with <strong>{svc.from}</strong>
+                Starts with <strong>{svcPkg ? `${svcPkg.name} · ${svcPkg.price}` : 'Custom quote'}</strong>
               </span>
               <div className="services__actions">
                 <button
@@ -69,7 +70,7 @@ export function Services({ projects }: { projects: Project[] }) {
                 <button
                   type="button"
                   className="btn btn--primary"
-                  onClick={() => startQuote({ pkg: svc.pkg, eventType: svc.eventType })}
+                  onClick={() => startQuote({ pkg: svcPkg ? svc.pkg : 'custom', eventType: svc.eventType })}
                 >
                   {svc.cta}
                 </button>
