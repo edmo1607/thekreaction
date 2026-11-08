@@ -83,6 +83,23 @@ $$;
 
 grant execute on function public.is_admin() to anon, authenticated;
 
+-- ---------- Data API grants -------------------------------------------
+-- Explicit grants, so this works with "Automatically expose new tables" OFF.
+-- Row level security below still decides which rows each role can touch.
+
+grant usage on schema public to anon, authenticated;
+
+revoke all on public.categories, public.projects, public.project_categories,
+              public.leads, public.admins from anon, authenticated;
+
+grant select on public.categories, public.projects, public.project_categories to anon;
+grant insert on public.leads to anon;
+
+grant select, insert, update, delete
+  on public.categories, public.projects, public.project_categories, public.leads
+  to authenticated;
+grant select on public.admins to authenticated;
+
 -- ---------- Row level security ---------------------------------------
 
 alter table public.categories         enable row level security;
