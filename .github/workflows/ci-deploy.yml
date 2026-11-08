@@ -3,7 +3,7 @@ name: CI / Deploy
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, staging]
   workflow_dispatch:
 
 concurrency:
@@ -60,3 +60,26 @@ jobs:
           security: ${{ vars.FTP_SECURITY || 'strict' }}
           local-dir: ./dist/
           server-dir: ${{ secrets.FTP_SERVER_DIR || './public_html/' }}
+
+  deploy-staging:
+    name: Deploy to staging (FTP)
+    needs: build
+    # Pushes to the "staging" branch publish to the preview site, never to production.
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/staging' && vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: Upload over FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.STAGING_FTP_USERNAME }}
+          password: ${{ secrets.STAGING_FTP_PASSWORD }}
+          protocol: ftps
+          security: ${{ vars.FTP_SECURITY || 'strict' }}
+          local-dir: ./dist/
+          server-dir: ${{ secrets.STAGING_FTP_SERVER_DIR || './' }}
