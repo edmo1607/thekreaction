@@ -54,5 +54,9 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
+          # "strict" verifies the TLS certificate. If the FTP host name doesn't match
+          # HostGator's shared certificate, set the repo variable FTP_SECURITY = loose
+          # (still encrypted, just skips the host-name check).
+          security: ${{ vars.FTP_SECURITY || 'strict' }}
           local-dir: ./dist/
           server-dir: ${{ secrets.FTP_SERVER_DIR || './public_html/' }}
