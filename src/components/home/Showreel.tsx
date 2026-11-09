@@ -13,7 +13,7 @@ export function Showreel() {
 
   return (
     <section className="wrap" id="reel" aria-label="Showreel">
-      <div className="reel">
+      <div className="reel" data-reveal="">
         {SHOWREEL && !isEmbed && (
           <video src={SHOWREEL} autoPlay muted loop playsInline controls={playing} />
         )}

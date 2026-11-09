@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { Icon } from '../Icon'
 import { PLANS } from '../../content/site'
 import { packageSummary, useQuote } from './QuoteContext'
+
+const TITLE = ['Video', 'that', 'makes', 'your', 'event', 'unforgettable.']
 
 export function Hero() {
   const { startQuote, findPackage, packages } = useQuote()
@@ -14,18 +16,27 @@ export function Hero() {
     <section className="hero" id="top">
       <div className="wrap hero__grid">
         <div>
-          <span className="status">
+          <span className="status intro" style={{ ['--d' as string]: '0ms' }}>
             <span className="status__dot" aria-hidden="true" />
             Miami video studio · Booking now
           </span>
           <h1 className="hero__title">
-            Video that makes your event <span className="accent">unforgettable.</span>
+            {TITLE.map((w, i) => (
+              <Fragment key={w}>
+                <span className="w">
+                  <span className={i === TITLE.length - 1 ? 'accent' : undefined} style={{ ['--i' as string]: i }}>
+                    {w}
+                  </span>
+                </span>
+                {i < TITLE.length - 1 && ' '}
+              </Fragment>
+            ))}
           </h1>
-          <p className="hero__lead">
+          <p className="hero__lead intro" style={{ ['--d' as string]: '650ms' }}>
             Nightlife, festivals, live sets, podcasts, interior design and brands across Miami. Filmed, edited and
             delivered as ready-to-post reels{fromPrice ? ` — from ${fromPrice}` : ''}.
           </p>
-          <div className="hero__proof">
+          <div className="hero__proof intro" style={{ ['--d' as string]: '800ms' }}>
             {['50+ projects delivered', 'Reels in 15–30 sec formats', 'Reply on WhatsApp'].map((t) => (
               <span key={t}>
                 <Icon name="check" className="accent" />
@@ -35,7 +46,7 @@ export function Hero() {
           </div>
         </div>
 
-        <div className="qq">
+        <div className="qq intro" style={{ ['--d' as string]: '450ms' }}>
           <span className="qq__label">Quick quote · 2 taps</span>
           <h2 className="qq__title" id="qq-title">
             What are you planning?

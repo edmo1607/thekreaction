@@ -8,12 +8,14 @@ import { QuoteForm } from '../components/home/QuoteForm'
 import { Faq, Footer, MobileBar, Partners, Pricing, Process, Testimonials } from '../components/home/Sections'
 import { QuoteProvider } from '../components/home/QuoteContext'
 import { useAsync } from '../hooks/useAsync'
+import { useReveal } from '../hooks/useReveal'
 import { fetchCategories, fetchPackages, fetchPublishedProjects } from '../lib/api'
 
 export default function Home() {
   const projects = useAsync(fetchPublishedProjects)
   const categories = useAsync(fetchCategories)
   const packages = useAsync(fetchPackages)
+  useReveal()
 
   // Honor /#section links (also used by redirects from the old Framer pages)
   const ready = !projects.loading && !packages.loading

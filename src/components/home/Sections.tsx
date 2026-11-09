@@ -2,14 +2,26 @@ import { useState } from 'react'
 import { Icon } from '../Icon'
 import { CONTACT, FAQS, PARTNERS, TESTIMONIALS, whatsappLink } from '../../content/site'
 import { useQuote } from './QuoteContext'
+import { reveal } from '../../hooks/useReveal'
 
 export function Partners() {
   return (
     <section className="wrap partners" aria-label="Brand partners">
       <span className="eyebrow">Trusted by</span>
-      {PARTNERS.map((p) => (
-        <span key={p}>{p}</span>
-      ))}
+      <div className="marquee">
+        <div className="marquee__track">
+          <ul className="marquee__list">
+            {PARTNERS.map((p) => (
+              <li key={p}>{p}</li>
+            ))}
+          </ul>
+          <ul className="marquee__list" aria-hidden="true">
+            {PARTNERS.map((p) => (
+              <li key={p}>{p}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </section>
   )
 }
@@ -19,16 +31,17 @@ export function Pricing() {
   return (
     <section className="pricing" id="pricing">
       <div className="wrap pricing__inner">
-        <div className="pricing__head">
+        <div className="pricing__head" {...reveal()}>
           <span className="eyebrow">Simple pricing</span>
           <h2 className="h2">Pick a package</h2>
           <p>Filming and editing included. Need more time? Add extra hours to any package.</p>
         </div>
         {packages.length > 0 && (
           <div className="plans" style={{ ['--plan-count' as string]: Math.min(packages.length, 4) }}>
-            {packages.map((p) => (
+            {packages.map((p, i) => (
               <div
                 key={p.id}
+                {...reveal(i)}
                 className={`plan${p.popular ? ' plan--dark' : ''}${pkg === p.slug ? ' plan--selected' : ''}`}
               >
                 <div className="plan__top">
@@ -98,13 +111,15 @@ const STEPS = [
 export function Process() {
   return (
     <section className="wrap process" id="process">
-      <span className="eyebrow">How it works</span>
-      <h2 className="h2" style={{ marginBottom: 48 }}>
-        Three steps. Zero stress.
-      </h2>
+      <div {...reveal()}>
+        <span className="eyebrow">How it works</span>
+        <h2 className="h2" style={{ marginBottom: 48 }}>
+          Three steps. Zero stress.
+        </h2>
+      </div>
       <div className="grid-3">
         {STEPS.map((s, i) => (
-          <div key={s.title} className="step">
+          <div key={s.title} className="step" {...reveal(i)}>
             <div className="step__num">0{i + 1}</div>
             <h3>{s.title}</h3>
             <p>{s.text}</p>
@@ -121,8 +136,8 @@ export function Testimonials() {
       <div className="wrap quotes__inner">
         <span className="eyebrow">Client stories</span>
         <div className="grid-3" style={{ marginTop: 32 }}>
-          {TESTIMONIALS.map((t) => (
-            <figure key={t.who} className="quote">
+          {TESTIMONIALS.map((t, i) => (
+            <figure key={t.who} className="quote" {...reveal(i)}>
               <blockquote>“{t.text}”</blockquote>
               <figcaption>{t.who}</figcaption>
             </figure>
@@ -137,12 +152,12 @@ export function Faq() {
   const [openIdx, setOpenIdx] = useState(0)
   return (
     <section className="faq" id="faq">
-      <h2 className="faq__title">Questions, answered</h2>
+      <h2 className="faq__title" {...reveal()}>Questions, answered</h2>
       <div className="faq__list">
         {FAQS.map((f, i) => {
           const isOpen = openIdx === i
           return (
-            <div key={f.q} className="faq__item">
+            <div key={f.q} className="faq__item" {...reveal(Math.min(i, 5))}>
               <h3 style={{ margin: 0, font: 'inherit' }}>
                 <button
                   type="button"

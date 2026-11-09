@@ -614,9 +614,7 @@ button {
   padding-block: 48px;
   display: flex;
   align-items: center;
-  gap: 16px 40px;
-  flex-wrap: wrap;
-  justify-content: center;
+  gap: 16px 32px;
   font-family: var(--display);
   font-size: 22px;
   text-transform: uppercase;
@@ -851,8 +849,15 @@ button {
 
 .card:hover {
   border-color: var(--line-3);
-  transform: translateY(-2px);
   color: var(--text);
+}
+
+.card .media img {
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.card:hover .media img {
+  transform: scale(1.06);
 }
 
 .card .media {
@@ -1628,5 +1633,184 @@ textarea.input {
   *::after {
     animation: none !important;
     transition: none !important;
+  }
+}
+
+/* =====================================================================
+   Motion — cinematic, light, and off for "reduce motion" users
+   ===================================================================== */
+
+:root {
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Scroll reveal: set by useReveal() via data-visible */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.8s var(--ease-out),
+    transform 0.8s var(--ease-out),
+    border-color 0.15s,
+    color 0.15s,
+    background-color 0.15s;
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+
+[data-reveal][data-visible] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Hero title: each word slides up out of a mask, like a cut */
+.hero__title .w {
+  display: inline-block;
+  /* clip only vertically (the slide-up mask); never cut a long word sideways */
+  overflow-x: visible;
+  overflow-y: clip;
+  vertical-align: top;
+  padding: 0.08em 0 0.04em;
+  margin: -0.08em 0 -0.04em;
+}
+
+.hero__title .w > span {
+  display: inline-block;
+  transform: translateY(110%);
+  animation: word-in 0.9s var(--ease-out) forwards;
+  animation-delay: calc(150ms + var(--i, 0) * 70ms);
+}
+
+@keyframes word-in {
+  to {
+    transform: none;
+  }
+}
+
+.intro {
+  opacity: 0;
+  animation: fade-up 0.8s var(--ease-out) forwards;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Partners marquee */
+.marquee {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+  animation: marquee 32s linear infinite;
+}
+
+.marquee:hover .marquee__track {
+  animation-play-state: paused;
+}
+
+.marquee__list {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.marquee__list li {
+  padding-right: 56px;
+  white-space: nowrap;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Services: image wipes in, copy fades up when switching tabs */
+.svc-wipe {
+  animation: wipe 0.7s var(--ease-out);
+}
+
+.svc-fade {
+  animation: fade-up 0.5s var(--ease-out);
+}
+
+@keyframes wipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Primary buttons: light sweep on hover */
+.btn--primary {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn--primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.25) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.75s var(--ease-out);
+}
+
+.btn--primary:hover::after {
+  transform: translateX(120%);
+}
+
+@media (max-width: 900px) {
+  .partners {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .marquee__track {
+    animation-duration: 22s;
+  }
+}
+
+/* Respect "reduce motion": everything visible, nothing moves */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal],
+  .intro,
+  .hero__title .w > span {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .marquee__track {
+    width: auto;
+  }
+  .marquee__list {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 0;
+  }
+  .marquee__list[aria-hidden='true'] {
+    display: none;
   }
 }

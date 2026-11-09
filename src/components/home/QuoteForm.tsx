@@ -62,7 +62,7 @@ export function QuoteForm() {
 
   return (
     <section className="contact" id="quote">
-      <div className="contact__box">
+      <div className="contact__box" data-reveal="">
         <div className="contact__grid">
           <div>
             <h2 className="contact__title">Let's lock your date</h2>

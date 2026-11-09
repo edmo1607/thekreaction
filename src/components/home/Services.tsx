@@ -3,6 +3,7 @@ import { SERVICES } from '../../content/site'
 import { mediaUrl } from '../../lib/supabase'
 import type { Project } from '../../lib/types'
 import { useQuote } from './QuoteContext'
+import { reveal } from '../../hooks/useReveal'
 
 export function Services({ projects }: { projects: Project[] }) {
   const { serviceId, setServiceId, setFilter, scrollTo, startQuote, findPackage } = useQuote()
@@ -13,7 +14,7 @@ export function Services({ projects }: { projects: Project[] }) {
 
   return (
     <section className="wrap services" id="services">
-      <span className="eyebrow">What we film</span>
+      <span className="eyebrow" {...reveal()}>What we film</span>
       <div className="services__grid">
         <div className="services__tabs" role="tablist" aria-label="Services">
           {SERVICES.map((s, i) => (
@@ -25,6 +26,7 @@ export function Services({ projects }: { projects: Project[] }) {
               aria-selected={s.id === svc.id}
               aria-controls="svc-panel"
               className="services__tab"
+              {...reveal(i)}
               onClick={() => setServiceId(s.id)}
             >
               <span className="services__tab-num">{String(i + 1).padStart(2, '0')}</span>
@@ -33,8 +35,14 @@ export function Services({ projects }: { projects: Project[] }) {
           ))}
         </div>
 
-        <div className="services__panel" role="tabpanel" id="svc-panel" aria-labelledby={`svc-tab-${svc.id}`}>
-          <div className="media" style={{ aspectRatio: '16 / 9' }}>
+        <div
+          className="services__panel"
+          role="tabpanel"
+          id="svc-panel"
+          aria-labelledby={`svc-tab-${svc.id}`}
+          {...reveal(2)}
+        >
+          <div key={`m-${svc.id}`} className="media svc-wipe" style={{ aspectRatio: '16 / 9' }}>
             <span className="media__badge media__badge--red">{svc.name}</span>
             {cover ? (
               <img src={cover} alt={sample?.title ?? svc.name} loading="lazy" />
@@ -42,7 +50,7 @@ export function Services({ projects }: { projects: Project[] }) {
               <span className="media__placeholder">{svc.name} sample</span>
             )}
           </div>
-          <div className="services__body">
+          <div key={`b-${svc.id}`} className="services__body svc-fade">
             <p className="services__desc">{svc.desc}</p>
             <ul className="checklist">
               {svc.items.map((it) => (

@@ -5,6 +5,7 @@ import { mediaUrl } from '../../lib/supabase'
 import { embedUrl } from '../../lib/video'
 import type { Category, Project } from '../../lib/types'
 import { useQuote } from './QuoteContext'
+import { reveal } from '../../hooks/useReveal'
 
 interface Props {
   projects: Project[]
@@ -28,7 +29,7 @@ export function Work({ projects, categories, loading }: Props) {
 
   return (
     <section className="wrap work" id="work">
-      <div className="section-head">
+      <div className="section-head" {...reveal()}>
         <div>
           <span className="eyebrow">Our work</span>
           <h2 className="h2">See it before you book</h2>
@@ -68,8 +69,8 @@ export function Work({ projects, categories, loading }: Props) {
         </div>
       ) : (
         <div className="work__grid">
-          {visible.map((p) => (
-            <ProjectCard key={p.id} project={p} onOpen={() => setOpen(p)} />
+          {visible.map((p, i) => (
+            <ProjectCard key={p.id} project={p} index={i} onOpen={() => setOpen(p)} />
           ))}
         </div>
       )}
@@ -85,7 +86,7 @@ export function Work({ projects, categories, loading }: Props) {
   )
 }
 
-function ProjectCard({ project, onOpen }: { project: Project; onOpen: () => void }) {
+function ProjectCard({ project, index, onOpen }: { project: Project; index: number; onOpen: () => void }) {
   const cover = mediaUrl(project.cover_path)
   const clip = mediaUrl(project.video_path)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -102,6 +103,7 @@ function ProjectCard({ project, onOpen }: { project: Project; onOpen: () => void
     <button
       type="button"
       className="card"
+      {...reveal(index % 4)}
       onClick={onOpen}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
